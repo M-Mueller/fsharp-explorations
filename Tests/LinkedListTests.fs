@@ -115,3 +115,24 @@ let ``tail of an empty list is an empty list`` () =
         LinkedList.empty
 
     LinkedList.tail list |> should equal LinkedList.empty
+
+let ``map add5 function on a range increases all values by 5`` () =
+    let add5 x =
+        x + 5
+
+    let list =
+        LinkedList.range 0 4
+
+    let result =
+        LinkedList.range 5 9
+
+    LinkedList.map add5 list |> should equal result
+
+let ``map String.length on a list of strings returns a list of ints`` () =
+    let list =
+        LinkedList.Item ("hello", (LinkedList.Item ("World", LinkedList.End)))
+
+    let result =
+        LinkedList.Item (4, (LinkedList.Item (5, LinkedList.End)))
+
+    LinkedList.map String.length list |> should equal result

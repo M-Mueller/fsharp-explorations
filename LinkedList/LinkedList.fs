@@ -36,3 +36,8 @@ module LinkedList =
         match list with
         | Item (_, tail) -> tail
         | End -> End
+
+    let rec map f list =
+        match list with
+        | Item (head, tail) -> Item(f head, map f tail)
+        | End -> End
