@@ -1,8 +1,8 @@
 ﻿namespace LinkedList
 
 module LinkedList =
-    type LinkedList =
-        | Item of int * LinkedList
+    type LinkedList<'T> =
+        | Item of 'T * LinkedList<'T>
         | End
 
     let empty =

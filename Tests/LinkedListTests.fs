@@ -20,7 +20,7 @@ let ``range from 3 to 3 has 1 element`` () =
 
 [<Fact>]
 let ``if range start is larger than stop, the result is empty`` () =
-    let result =
+    let result:LinkedList.LinkedList<int> =
         LinkedList.End
 
     LinkedList.range 3 0 |> should equal result
