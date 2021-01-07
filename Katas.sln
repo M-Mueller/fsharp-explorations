@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LinkedList", "LinkedList\LinkedList.fsproj", "{8CA7CFD2-4794-4C43-8A51-4C9F4CD238AE}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Katas", "Katas\Katas.fsproj", "{8CA7CFD2-4794-4C43-8A51-4C9F4CD238AE}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "Tests\Tests.fsproj", "{30AC9F5C-72A9-44DC-974F-85AFAD863D30}"
 EndProject

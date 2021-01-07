@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LinkedList\LinkedList.fsproj" />
+    <ProjectReference Include="..\Katas\Katas.fsproj" />
   </ItemGroup>
 
 </Project>
