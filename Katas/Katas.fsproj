@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Equations.fs" />
+    <Compile Include="GameOfLife.fs" />
     <Compile Include="LinkedList.fs" />
   </ItemGroup>
 

@@ -7,7 +7,6 @@ open Avalonia.Input
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Components.Hosts
-open GameOfLife
 
 type MainWindow() as this =
     inherit HostWindow()
@@ -20,8 +19,8 @@ type MainWindow() as this =
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
 
 
-        Elmish.Program.mkSimple (fun () -> GameOfLife.init) GameOfLife.update GameOfLife.view
-        |> Program.withSubscription GameOfLife.subscription
+        Elmish.Program.mkSimple (fun () -> Board.init) Board.update Board.view
+        |> Program.withSubscription Board.subscription
         |> Program.withHost this
         |> Program.run
 

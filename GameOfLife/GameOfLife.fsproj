@@ -6,11 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="GameOfLife.fs" />
+    <Compile Include="Board.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Katas\Katas.fsproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="0.9.7" />
