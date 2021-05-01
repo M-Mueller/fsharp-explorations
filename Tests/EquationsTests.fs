@@ -3,12 +3,8 @@ module EquationsTest
 open Xunit
 open FsUnit.Xunit
 open Equations.ExpressionTree
+open TestUtils
 
-type ClassDataBase(generator : obj [] seq) = 
-    interface seq<obj []> with
-        member this.GetEnumerator() = generator.GetEnumerator()
-        member this.GetEnumerator() = 
-            generator.GetEnumerator() :> System.Collections.IEnumerator
 
 type ``Evaluate a ExpressionTree of `` () =
     [<Fact>]

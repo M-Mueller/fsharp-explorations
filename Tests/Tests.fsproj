@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="TestUtils.fs" />
     <Compile Include="EquationsTests.fs" />
     <Compile Include="LinkedListTests.fs" />
+    <Compile Include="RomanNumeralsTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

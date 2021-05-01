@@ -8,6 +8,7 @@
     <Compile Include="Equations.fs" />
     <Compile Include="GameOfLife.fs" />
     <Compile Include="LinkedList.fs" />
+    <Compile Include="RomanNumerals.fs" />
   </ItemGroup>
 
 </Project>
