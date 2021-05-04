@@ -1,7 +1,7 @@
 module LinkedListTests
 
 open Xunit
-open FsUnit.Xunit
+open Swensen.Unquote
 open LinkedList
 
 [<Fact>]
@@ -9,42 +9,39 @@ let ``range from 0 to 3 has 4 elements`` () =
     let result =
         LinkedList.Item (0, LinkedList.Item (1, LinkedList.Item (2, LinkedList.Item (3, LinkedList.End))))
 
-    LinkedList.range 0 3 |> should equal result
+    test <@ LinkedList.range 0 3 = result @>
 
 [<Fact>]
 let ``range from 3 to 3 has 1 element`` () =
     let result =
         LinkedList.Item (3, LinkedList.End)
 
-    LinkedList.range 3 3 |> should equal result
+    test <@ LinkedList.range 3 3 = result @>
 
 [<Fact>]
 let ``if range start is larger than stop, the result is empty`` () =
     let result:LinkedList.LinkedList<int> =
         LinkedList.End
 
-    LinkedList.range 3 0 |> should equal result
+    test <@ LinkedList.range 3 0 = result @>
 
 [<Fact>]
 let ``Length of empty list is 0`` () =
-    let list =
-        LinkedList.empty
-
-    LinkedList.length list |> should equal 0
+    test <@ LinkedList.length LinkedList.empty = 0 @>
 
 [<Fact>]
 let ``Length of list with 2 items is 2`` () =
     let list =
         LinkedList.Item (1, (LinkedList.Item (2, LinkedList.End)))
 
-    LinkedList.length list |> should equal 2
+    test <@ LinkedList.length list = 2 @>
 
 [<Fact>]
 let ``cons prepends an item to an empty list`` () =
     let list =
         LinkedList.cons 1 LinkedList.empty
 
-    list |> should equal (LinkedList.Item (1, LinkedList.End))
+    test <@ list = (LinkedList.Item (1, LinkedList.End)) @>
 
 [<Fact>]
 let ``cons prepends an item to an existing list`` () =
@@ -54,7 +51,7 @@ let ``cons prepends an item to an existing list`` () =
     let result =
         LinkedList.Item (0, LinkedList.Item (1, LinkedList.Item (2, LinkedList.End)))
 
-    list |> should equal result
+    test <@ list = result @>
 
 type ``appending an empty list does not change the original list`` () =
     let range =
@@ -64,15 +61,15 @@ type ``appending an empty list does not change the original list`` () =
 
     [<Fact>]
     member x.``when the left argument is empty`` () =
-        LinkedList.append empty range |> should equal range
+        test <@ LinkedList.append empty range = range @>
 
     [<Fact>]
     member x.``when the right argument is empty`` () =
-        LinkedList.append range empty |> should equal range
+        test <@ LinkedList.append range empty = range @>
 
     [<Fact>]
     member x.``when the boths arguments are empty`` () =
-        LinkedList.append empty empty |> should equal empty
+        test <@ LinkedList.append empty empty = empty @>
 
 [<Fact>]
 let ``appending [4; 5] to [1; 2; 3] results in [1; 2; 3; 4; 5]`` () =
@@ -83,21 +80,18 @@ let ``appending [4; 5] to [1; 2; 3] results in [1; 2; 3; 4; 5]`` () =
     let result =
         LinkedList.range 1 5
 
-    LinkedList.append list1 list2 |> should equal result
+    test <@ LinkedList.append list1 list2 = result @>
 
 [<Fact>]
 let ``head of a list is the value of the first item`` () =
     let list =
         LinkedList.range 1 10
 
-    LinkedList.head list |> should equal (Some 1)
+    test <@ LinkedList.head list = (Some 1) @>
 
 [<Fact>]
 let ``head of a list an empty list is None`` () =
-    let list =
-        LinkedList.empty
-
-    LinkedList.head list |> should equal None
+    test <@ LinkedList.head LinkedList.empty = None @>
 
 [<Fact>]
 let ``tail of a list is the list without the first item`` () =
@@ -107,14 +101,11 @@ let ``tail of a list is the list without the first item`` () =
     let result =
         LinkedList.range 2 10
 
-    LinkedList.tail list |> should equal result
+    test <@ LinkedList.tail list = result @>
 
 [<Fact>]
 let ``tail of an empty list is an empty list`` () =
-    let list =
-        LinkedList.empty
-
-    LinkedList.tail list |> should equal LinkedList.empty
+    test <@ LinkedList.tail LinkedList.empty = LinkedList.empty @>
 
 let ``map add5 function on a range increases all values by 5`` () =
     let add5 x =
@@ -126,7 +117,7 @@ let ``map add5 function on a range increases all values by 5`` () =
     let result =
         LinkedList.range 5 9
 
-    LinkedList.map add5 list |> should equal result
+    test <@ LinkedList.map add5 list = result @>
 
 let ``map String.length on a list of strings returns a list of ints`` () =
     let list =
@@ -135,4 +126,4 @@ let ``map String.length on a list of strings returns a list of ints`` () =
     let result =
         LinkedList.Item (4, (LinkedList.Item (5, LinkedList.End)))
 
-    LinkedList.map String.length list |> should equal result
+    test <@ LinkedList.map String.length list = result @>
