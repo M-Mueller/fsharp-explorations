@@ -17,17 +17,19 @@ let evolveCells width height aliveCells =
         (newx, newy)
 
     let neighbors (x, y) =
-        [ (x - 1, y - 1)
-          (x, y - 1)
-          (x + 1, y - 1)
-          (x + 1, y)
-          (x - 1, y)
-          (x - 1, y + 1)
-          (x, y + 1)
-          (x + 1, y + 1) ]
+        [
+            (x - 1, y - 1)
+            (x, y - 1)
+            (x + 1, y - 1)
+            (x + 1, y)
+            (x - 1, y)
+            (x - 1, y + 1)
+            (x, y + 1)
+            (x + 1, y + 1)
+        ]
         |> List.map wrapBorderCell
 
-    let numberOfAliveNeighbors (cell: int * int) : int =
+    let numberOfAliveNeighbors (cell : int * int) : int =
         neighbors cell
         |> List.filter (fun cell -> Set.contains cell aliveCells)
         |> List.length
@@ -37,7 +39,8 @@ let evolveCells width height aliveCells =
             (fun cell ->
                 let n = numberOfAliveNeighbors cell
 
-                n = 2 || n = 3)
+                n = 2 || n = 3
+            )
             aliveCells
 
     let newCells =
