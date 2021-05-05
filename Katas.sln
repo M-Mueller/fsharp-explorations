@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Katas", "Katas\Katas.fsproj
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "Tests\Tests.fsproj", "{30AC9F5C-72A9-44DC-974F-85AFAD863D30}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GameOfLife", "GameOfLife\GameOfLife.fsproj", "{B4F9944C-D3EB-4D95-9E33-D81B29AA9C7C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GameOfLifeAvalonia", "GameOfLifeAvalonia\GameOfLifeAvalonia.fsproj", "{B4F9944C-D3EB-4D95-9E33-D81B29AA9C7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
