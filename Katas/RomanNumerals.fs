@@ -19,28 +19,25 @@ let internal literals =
 let internal literalsMap = Map literals
 
 let rec internal parseLiterals (roman : list<char>) (arabic : list<int>) =
-    let convertOne c =
-        let literal = string c
+    let (|SingleLiteral|_|) (chars : list<char>) =
+        match chars with
+        | c :: cs ->
+            literalsMap.TryFind (string c)
+            |> Option.map (fun n -> (n, cs))
+        | _ -> None
 
-        literalsMap.TryFind literal
-
-    let convertTwo c1 c2 =
-        let literal = string c1 + string c2
-
-        literalsMap.TryFind literal
-
-    let processRemaining c cs a =
-        match a with
-        | Some a -> parseLiterals cs (a :: arabic)
-        | None -> Error $"'{c}' is not a valid roman number"
+    let (|DoubleLiteral|_|) (chars : list<char>) =
+        match chars with
+        | c1 :: c2 :: cs ->
+            literalsMap.TryFind (string c1 + string c2)
+            |> Option.map (fun n -> (n, cs))
+        | _ -> None
 
     match roman with
     | [] -> Ok arabic
-    | c1 :: c2 :: cs ->
-        match convertTwo c1 c2 with
-        | Some a -> processRemaining c1 cs (Some a)
-        | None -> convertOne c1 |> processRemaining c1 (c2 :: cs)
-    | c :: cs -> convertOne c |> processRemaining c cs
+    | DoubleLiteral (a, cs) -> parseLiterals cs (a :: arabic)
+    | SingleLiteral (a, cs) -> parseLiterals cs (a :: arabic)
+    | c :: cs -> Error $"'{c}' is not a valid roman number"
 
 let validate arabic =
     let rec validateOrder remaining =
@@ -54,7 +51,7 @@ let validate arabic =
 let toArabic (roman : string) =
     parseLiterals (Seq.toList roman) []
     |> Result.bind validate
-    |> Result.map (List.sum)
+    |> Result.map List.sum
 
 let fromArabic arabic =
     let rec convert roman arabic literals =
