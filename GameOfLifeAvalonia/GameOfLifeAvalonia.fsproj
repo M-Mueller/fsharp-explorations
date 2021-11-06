@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Katas\Katas.fsproj" />
+    <ProjectReference Include="..\Katas\src\Katas.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
