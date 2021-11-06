@@ -18,7 +18,9 @@ let internal literals =
 
 let internal literalsMap = Map literals
 
-let rec internal parseLiterals (roman : list<char>) (arabic : list<int>) =
+/// Converts each roman numeral into a number and appends the number to the list of
+/// initial arabic numbers.
+let rec internal parseLiterals (arabic : list<int>) (roman : list<char>) =
     let (|SingleLiteral|_|) (chars : list<char>) =
         match chars with
         | c :: cs ->
@@ -35,8 +37,8 @@ let rec internal parseLiterals (roman : list<char>) (arabic : list<int>) =
 
     match roman with
     | [] -> Ok arabic
-    | DoubleLiteral (a, cs) -> parseLiterals cs (a :: arabic)
-    | SingleLiteral (a, cs) -> parseLiterals cs (a :: arabic)
+    | DoubleLiteral (number, remaining) -> parseLiterals (number :: arabic) remaining
+    | SingleLiteral (number, remaining) -> parseLiterals (number :: arabic) remaining
     | c :: cs -> Error $"'{c}' is not a valid roman number"
 
 let validate arabic =
@@ -49,7 +51,9 @@ let validate arabic =
     arabic |> validateOrder
 
 let toArabic (roman : string) =
-    parseLiterals (Seq.toList roman) []
+    roman
+    |> Seq.toList
+    |> parseLiterals []
     |> Result.bind validate
     |> Result.map List.sum
 

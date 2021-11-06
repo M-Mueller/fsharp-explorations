@@ -3,16 +3,14 @@ module Katas.GameOfLife
 let evolveCells width height aliveCells =
     let wrapBorderCell (x, y) =
         let newx =
-            match x with
-            | x when x < 1 -> width
-            | x when x > width -> 1
-            | _ -> x
+            if x < 1 then width
+            else if x > width then 1
+            else x
 
         let newy =
-            match y with
-            | y when y < 1 -> height
-            | y when y > height -> 1
-            | _ -> y
+            if y < 1 then height
+            else if y > height then 1
+            else y
 
         (newx, newy)
 
