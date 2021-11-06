@@ -12,7 +12,10 @@ type Todo =
       text: string
       isDone: bool }
 
-type EditedTodo = { id: Guid; text: string }
+type EditedTodo =
+    { id: Guid
+      text: string
+      initial: string }
 
 [<RequireQualifiedAccess>]
 type Filter =
@@ -74,7 +77,11 @@ let update (msg: Msg) (state: State) : State =
               editedTodo =
                   state.todos
                   |> List.tryFind (fun todo -> todo.id = id)
-                  |> Option.map (fun todo -> { id = todo.id; text = todo.text }) }
+                  |> Option.map
+                      (fun todo ->
+                          { id = todo.id
+                            text = todo.text
+                            initial = todo.text }) }
     | SetEditedText text ->
         match state.editedTodo with
         | Some editedTodo ->
@@ -111,7 +118,7 @@ let renderInput (currentText: string) (dispatch: Msg -> unit) =
             ]
             Html.button [
                 prop.className "btn btn-primary"
-                prop.disabled (String.IsNullOrEmpty currentText)
+                prop.disabled (String.IsNullOrWhiteSpace currentText)
                 prop.children [
                     Html.i [ prop.className "bi bi-plus" ]
                 ]
@@ -204,6 +211,10 @@ let renderEditedTodo (todo: EditedTodo) (dispatch: Msg -> unit) =
                     ]
                     Html.button [
                         prop.className "btn btn-primary align-self-center mx-2"
+                        prop.disabled (
+                            todo.text = todo.initial
+                            || String.IsNullOrWhiteSpace todo.text
+                        )
                         prop.onClick (fun _ -> dispatch (SaveEditTodo))
                         prop.children [
                             Html.i [ prop.className "bi bi-save2" ]
