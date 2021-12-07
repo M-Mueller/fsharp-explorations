@@ -1,4 +1,2 @@
-root = true
-
-[*.fs]
-fsharp_single_argument_web_mode=true
+[*.{fsx,fs}]
+fsharp_max_array_or_list_width=120
