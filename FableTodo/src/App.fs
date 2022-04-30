@@ -2,8 +2,10 @@ module App
 
 open System
 open Feliz
+open Feliz.svg
 open Elmish
 open Elmish.React
+open Elmish.HMR
 
 type Todo =
     { id: Guid
@@ -15,23 +17,15 @@ type EditedTodo =
       text: string
       initial: string }
 
-[<RequireQualifiedAccess>]
-type Filter =
-    | All
-    | Completed
-    | NotCompleted
-
 type State =
     { newTodo: string
       todos: Todo list
-      editedTodo: EditedTodo option
-      filter: Filter }
+      editedTodo: EditedTodo option }
 
 let init () =
     { newTodo = ""
       todos = []
-      editedTodo = None
-      filter = Filter.All }
+      editedTodo = None }
 
 type Msg =
     | SetNewTodo of string
@@ -42,7 +36,6 @@ type Msg =
     | SetEditedText of string
     | CancelEditTodo
     | SaveEditTodo
-    | SetFilter of Filter
 
 let update (msg: Msg) (state: State) : State =
     match msg with
@@ -102,164 +95,138 @@ let update (msg: Msg) (state: State) : State =
                                   { todo with text = editedTodo.text }
                               else
                                   todo) }
-    | SetFilter filter -> { state with filter = filter }
 
 
 let renderInput (currentText: string) (dispatch: Msg -> unit) =
     Html.div [
-        prop.className "input-group my-2"
+        prop.className "space-x"
+        prop.style [ style.display.flex ]
         prop.children [
             Html.input [
-                prop.className "form-control"
                 prop.valueOrDefault currentText
                 prop.onChange (fun s -> dispatch (SetNewTodo s))
             ]
             Html.button [
-                prop.className "btn btn-primary"
+                prop.style [ style.width.minContent ]
                 prop.disabled (String.IsNullOrWhiteSpace currentText)
-                prop.children [
-                    Html.i [ prop.className "bi bi-plus" ]
-                ]
+                prop.children [ Icons.plus ]
                 prop.onClick (fun _ -> dispatch AddTodo)
             ]
         ]
     ]
 
-let renderFilters (activeFilter: Filter) (dispatch: Msg -> unit) =
-    let renderFilter (text: string) (filter: Filter) =
-        Html.button [
-            prop.className [
-                "btn"
-                if activeFilter = filter then
-                    "btn-primary"
-                else
-                    "btn-outline-primary"
-            ]
-            prop.onClick (fun _ -> dispatch (SetFilter filter))
-            prop.text text
-        ]
-
-    Html.div [
-        prop.className "btn-group w-100 my-2"
-        prop.children [
-            renderFilter "All" Filter.All
-            renderFilter "Completed" Filter.Completed
-            renderFilter "Not Completed" Filter.NotCompleted
-        ]
-    ]
 
 let renderTodo (todo: Todo) (dispatch: Msg -> unit) =
-    Html.li [
-        prop.className "card my-3"
+    Html.article [
+        prop.className "space-x"
+        prop.style [
+            style.display.flex
+            style.flexDirection.row
+        ]
         prop.children [
-            Html.div [
-                prop.className "card-body d-flex flex-row"
-                prop.children [
-                    Html.span [
-                        prop.className "flex-grow-1 align-self-center mx-2 text-break"
-                        prop.text todo.text
-                    ]
-                    Html.button [
-                        prop.className [
-                            "btn"
-                            if todo.isDone then
-                                "btn-success"
-                            else
-                                "btn-outline-secondary"
-                            "align-self-center"
-                            "mx-2"
-                        ]
-                        prop.onClick (fun _ -> dispatch (ToggleTodo todo.id))
-                        prop.children [
-                            Html.i [ prop.className "bi bi-check" ]
-                        ]
-                    ]
-                    Html.button [
-                        prop.className "btn btn-warning align-self-center mx-2"
-                        prop.onClick (fun _ -> dispatch (EditTodo todo.id))
-                        prop.children [
-                            Html.i [
-                                prop.className "bi bi-pencil-square"
-                            ]
-                        ]
-                    ]
-                    Html.button [
-                        prop.className "btn btn-danger align-self-center mx-2"
-                        prop.onClick (fun _ -> dispatch (DeleteTodo todo.id))
-                        prop.children [
-                            Html.i [ prop.className "bi bi-trash" ]
-                        ]
-                    ]
+            Html.span [
+                prop.style [
+                    style.flexGrow 1
+                    style.alignSelf.center
+                    style.wordBreak.breakWord
                 ]
+                prop.text todo.text
+            ]
+            Html.button [
+                prop.className [
+                    if todo.isDone then
+                        "success"
+                    else
+                        "outline"
+                ]
+                prop.style [
+                    style.alignSelf.center
+                    style.width.minContent
+                    style.marginBottom 0
+                ]
+                prop.onClick (fun _ -> dispatch (ToggleTodo todo.id))
+                prop.children [ Icons.check ]
+            ]
+            Html.button [
+                prop.style [
+                    style.alignSelf.center
+                    style.width.minContent
+                    style.marginBottom 0
+                ]
+                prop.onClick (fun _ -> dispatch (EditTodo todo.id))
+                prop.children [ Icons.edit ]
+            ]
+            Html.button [
+                prop.className "danger"
+                prop.style [
+                    style.alignSelf.center
+                    style.width.minContent
+                    style.marginBottom 0
+                ]
+                prop.onClick (fun _ -> dispatch (DeleteTodo todo.id))
+                prop.children [ Icons.trash ]
             ]
         ]
     ]
 
 let renderEditedTodo (todo: EditedTodo) (dispatch: Msg -> unit) =
-    Html.li [
-        prop.className "card my-3"
+    Html.article [
+        prop.className "space-x"
+        prop.style [
+            style.display.flex
+            style.flexDirection.row
+        ]
         prop.children [
-            Html.div [
-                prop.className "card-body d-flex flex-row"
-                prop.children [
-                    Html.input [
-                        prop.className "flex-grow-1 align-self-center mx-2"
-                        prop.valueOrDefault todo.text
-                        prop.onChange (fun s -> dispatch (SetEditedText s))
-                    ]
-                    Html.button [
-                        prop.className "btn btn-primary align-self-center mx-2"
-                        prop.disabled (
-                            todo.text = todo.initial
-                            || String.IsNullOrWhiteSpace todo.text
-                        )
-                        prop.onClick (fun _ -> dispatch (SaveEditTodo))
-                        prop.children [
-                            Html.i [ prop.className "bi bi-save2" ]
-                        ]
-                    ]
-                    Html.button [
-                        prop.className "btn btn-secondary align-self-center mx-2"
-                        prop.onClick (fun _ -> dispatch (CancelEditTodo))
-                        prop.children [
-                            Html.i [ prop.className "bi bi-x" ]
-                        ]
-                    ]
+            Html.input [
+                prop.style [
+                    style.flexGrow 1
+                    style.alignSelf.center
+                    style.wordBreak.breakWord
+                    style.marginBottom 0
                 ]
+                prop.valueOrDefault todo.text
+                prop.onChange (fun s -> dispatch (SetEditedText s))
+            ]
+            Html.button [
+                prop.style [
+                    style.alignSelf.center
+                    style.width.minContent
+                    style.marginBottom 0
+                ]
+                prop.disabled (
+                    todo.text = todo.initial
+                    || String.IsNullOrWhiteSpace todo.text
+                )
+                prop.onClick (fun _ -> dispatch (SaveEditTodo))
+                prop.children [ Icons.save ]
+            ]
+            Html.button [
+                prop.className "outline"
+                prop.style [
+                    style.alignSelf.center
+                    style.width.minContent
+                    style.marginBottom 0
+                ]
+                prop.onClick (fun _ -> dispatch (CancelEditTodo))
+                prop.children [ Icons.x ]
             ]
         ]
     ]
 
 let renderTodos (state: State) (dispatch: Msg -> unit) =
-    let filteredTodos =
-        state.todos
-        |> List.filter
-            (fun todo ->
-                match state.filter with
-                | Filter.All -> true
-                | Filter.Completed -> todo.isDone
-                | Filter.NotCompleted -> not todo.isDone)
-
-    Html.ul [
-        prop.className "list-unstyled"
-        prop.children [
-            for todo in filteredTodos ->
-                match state.editedTodo with
-                | Some editedTodo when editedTodo.id = todo.id -> renderEditedTodo editedTodo dispatch
-                | _ -> renderTodo todo dispatch
-        ]
+    Html.div [
+        for todo in state.todos ->
+            match state.editedTodo with
+            | Some editedTodo when editedTodo.id = todo.id -> renderEditedTodo editedTodo dispatch
+            | _ -> renderTodo todo dispatch
     ]
 
 let render (state: State) (dispatch: Msg -> unit) =
     Html.div [
-        prop.className "container my-3"
-        prop.style [
-            style.custom ("maxWidth", "500px")
-        ]
+        prop.className "container"
         prop.children [
             Html.h1 "To-Do List"
             renderInput state.newTodo dispatch
-            renderFilters state.filter dispatch
             renderTodos state dispatch
         ]
     ]

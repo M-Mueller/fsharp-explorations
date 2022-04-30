@@ -1,0 +1,17 @@
+.success {
+    border-color: green;
+    background-color: green;
+}
+
+.warning {
+    background-color: orange;
+}
+
+.danger {
+    border-color: red;
+    background-color: red;
+}
+
+.space-x > * + * {
+    margin-left: 0.25rem;
+}
