@@ -4,8 +4,6 @@ open System
 open Feliz
 open Elmish
 open Elmish.React
-open Elmish.Debug
-open Elmish.HMR
 
 type Todo =
     { id: Guid
@@ -269,5 +267,4 @@ let render (state: State) (dispatch: Msg -> unit) =
 
 Program.mkSimple init update render
 |> Program.withReactSynchronous "elmish-app"
-|> Program.withDebugger
 |> Program.run
