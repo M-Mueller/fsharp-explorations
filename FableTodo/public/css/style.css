@@ -1,17 +1,16 @@
-.success {
-    border-color: green;
-    background-color: green;
-}
-
-.warning {
-    background-color: orange;
-}
-
 .danger {
     border-color: red;
-    background-color: red;
+    color: red;
+}
+
+.dimmed {
+    background-color: #f2f3f3;
 }
 
 .space-x > * + * {
     margin-left: 0.25rem;
+}
+
+.line-through {
+    text-decoration-line: line-through;
 }

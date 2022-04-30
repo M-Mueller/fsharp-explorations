@@ -118,54 +118,49 @@ let renderInput (currentText: string) (dispatch: Msg -> unit) =
 
 let renderTodo (todo: Todo) (dispatch: Msg -> unit) =
     Html.article [
-        prop.className "space-x"
+        prop.className [
+            "space-x"
+            if todo.isDone then "dimmed"
+        ]
         prop.style [
             style.display.flex
             style.flexDirection.row
         ]
         prop.children [
             Html.span [
+                prop.className [
+                    if todo.isDone then "line-through"
+                ]
                 prop.style [
                     style.flexGrow 1
                     style.alignSelf.center
                     style.wordBreak.breakWord
                 ]
                 prop.text todo.text
-            ]
-            Html.button [
-                prop.className [
-                    if todo.isDone then
-                        "success"
-                    else
-                        "outline"
-                ]
-                prop.style [
-                    style.alignSelf.center
-                    style.width.minContent
-                    style.marginBottom 0
-                ]
                 prop.onClick (fun _ -> dispatch (ToggleTodo todo.id))
-                prop.children [ Icons.check ]
             ]
-            Html.button [
-                prop.style [
-                    style.alignSelf.center
-                    style.width.minContent
-                    style.marginBottom 0
+            if todo.isDone then
+                Html.button [
+                    prop.className [ "outline"; "danger" ]
+                    prop.style [
+                        style.alignSelf.center
+                        style.width.minContent
+                        style.marginBottom 0
+                    ]
+                    prop.onClick (fun _ -> dispatch (DeleteTodo todo.id))
+                    prop.children [ Icons.trash ]
                 ]
-                prop.onClick (fun _ -> dispatch (EditTodo todo.id))
-                prop.children [ Icons.edit ]
-            ]
-            Html.button [
-                prop.className "danger"
-                prop.style [
-                    style.alignSelf.center
-                    style.width.minContent
-                    style.marginBottom 0
+            else
+                Html.button [
+                    prop.className [ "outline" ]
+                    prop.style [
+                        style.alignSelf.center
+                        style.width.minContent
+                        style.marginBottom 0
+                    ]
+                    prop.onClick (fun _ -> dispatch (EditTodo todo.id))
+                    prop.children [ Icons.edit ]
                 ]
-                prop.onClick (fun _ -> dispatch (DeleteTodo todo.id))
-                prop.children [ Icons.trash ]
-            ]
         ]
     ]
 
