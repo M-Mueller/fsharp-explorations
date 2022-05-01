@@ -209,11 +209,16 @@ let renderEditedTodo (todo: EditedTodo) (dispatch: Msg -> unit) =
     ]
 
 let renderTodos (state: State) (dispatch: Msg -> unit) =
+    // render finished todos at the end
+    let doneTodos, remainingTodos = List.partition (fun todo -> todo.isDone) state.todos
+
     Html.div [
-        for todo in state.todos ->
+        for todo in remainingTodos ->
             match state.editedTodo with
             | Some editedTodo when editedTodo.id = todo.id -> renderEditedTodo editedTodo dispatch
             | _ -> renderTodo todo dispatch
+        for todo in doneTodos ->
+            renderTodo todo dispatch
     ]
 
 let render (state: State) (dispatch: Msg -> unit) =
