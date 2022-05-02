@@ -1,4 +1,4 @@
-module App
+module Todo.App
 
 open System
 open Feliz
@@ -41,23 +41,23 @@ let update (msg: Msg) (state: State) : State =
     match msg with
     | SetNewTodo text -> { state with newTodo = text }
     | AddTodo ->
+        let newTodo =
+            { id = Guid.NewGuid()
+              text = state.newTodo
+              isDone = false }
+
         { state with
-              todos =
-                  { id = Guid.NewGuid()
-                    text = state.newTodo
-                    isDone = false }
-                  :: state.todos
+              todos = newTodo :: state.todos
               newTodo = "" }
     | ToggleTodo id ->
+        let updateTodo (todo: Todo) =
+            if todo.id = id then
+                { todo with isDone = not todo.isDone }
+            else
+                todo
+
         { state with
-              todos =
-                  state.todos
-                  |> List.map
-                      (fun todo ->
-                          if todo.id = id then
-                              { todo with isDone = not todo.isDone }
-                          else
-                              todo) }
+              todos = List.map updateTodo state.todos }
     | DeleteTodo id ->
         { state with
               todos =
@@ -85,16 +85,15 @@ let update (msg: Msg) (state: State) : State =
         | None -> state
         | Some editedTodo when editedTodo.text = "" -> state
         | Some editedTodo ->
+            let updateTodo (todo: Todo) =
+                if todo.id = editedTodo.id then
+                    { todo with text = editedTodo.text }
+                else
+                    todo
+
             { state with
                   editedTodo = None
-                  todos =
-                      state.todos
-                      |> List.map
-                          (fun todo ->
-                              if todo.id = editedTodo.id then
-                                  { todo with text = editedTodo.text }
-                              else
-                                  todo) }
+                  todos = List.map updateTodo state.todos }
 
 
 let renderInput (currentText: string) (dispatch: Msg -> unit) =
@@ -118,6 +117,7 @@ let renderInput (currentText: string) (dispatch: Msg -> unit) =
 
 let renderTodo (todo: Todo) (dispatch: Msg -> unit) =
     Html.article [
+        prop.key todo.id
         prop.className [
             "space-x"
             if todo.isDone then "dimmed"
@@ -210,15 +210,15 @@ let renderEditedTodo (todo: EditedTodo) (dispatch: Msg -> unit) =
 
 let renderTodos (state: State) (dispatch: Msg -> unit) =
     // render finished todos at the end
-    let doneTodos, remainingTodos = List.partition (fun todo -> todo.isDone) state.todos
+    let doneTodos, remainingTodos =
+        List.partition (fun todo -> todo.isDone) state.todos
 
     Html.div [
         for todo in remainingTodos ->
             match state.editedTodo with
             | Some editedTodo when editedTodo.id = todo.id -> renderEditedTodo editedTodo dispatch
             | _ -> renderTodo todo dispatch
-        for todo in doneTodos ->
-            renderTodo todo dispatch
+        for todo in doneTodos -> renderTodo todo dispatch
     ]
 
 let render (state: State) (dispatch: Msg -> unit) =
