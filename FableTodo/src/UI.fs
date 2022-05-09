@@ -4,7 +4,7 @@ open System
 open Feliz
 open Feliz.svg
 
-let renderInput (currentText: string) (dispatch: Msg -> unit) =
+let renderInput (disabled: bool) (currentText: string) (dispatch: Msg -> unit) =
     Html.div [
         prop.className "space-x"
         prop.style [ style.display.flex ]
@@ -12,11 +12,15 @@ let renderInput (currentText: string) (dispatch: Msg -> unit) =
             Html.input [
                 prop.valueOrDefault currentText
                 prop.onChange (fun s -> dispatch (SetNewTodo s))
+                prop.disabled disabled
             ]
             Html.button [
                 prop.style [ style.width.minContent ]
-                prop.disabled (String.IsNullOrWhiteSpace currentText)
-                prop.children [ Icons.plus ]
+                prop.disabled (String.IsNullOrWhiteSpace currentText || disabled)
+                prop.ariaBusy disabled
+                prop.children [
+                    if not disabled then Icons.plus
+                ]
                 prop.onClick (fun _ -> dispatch AddTodo)
             ]
         ]
@@ -138,7 +142,12 @@ let render (state: State) (dispatch: Msg -> unit) =
         prop.className "container"
         prop.children [
             Html.h1 "To-Do List"
-            renderInput state.newTodo dispatch
+            renderInput state.addingNewTodo state.newTodo dispatch
+            if not (String.IsNullOrEmpty state.lastError) then
+                Html.div [
+                    prop.className "danger"
+                    prop.text state.lastError
+                ]
             renderTodos state dispatch
         ]
     ]

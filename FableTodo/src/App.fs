@@ -6,45 +6,49 @@ open Elmish.React
 open Elmish.HMR
 
 let init () =
-    let getTodos : Cmd<Msg> =
-        RemoteData.get
-            "http://localhost:5984/todos/_all_docs?include_docs=true"
-            (Json.CouchDB.rowsDecoder Json.Todo.decoder)
-            TodosReceived
-
     { newTodo = ""
+      addingNewTodo = false
       todos = Loading
-      editedTodo = None },
-    getTodos
+      editedTodo = None
+      lastError = "" },
+    (Api.getTodos TodosReceived)
 
 let update (msg: Msg) (state: State) : State * Cmd<Msg> =
+    let findTodo id =
+        state.todos
+        |> RemoteData.getSuccess
+        |> Option.defaultValue []
+        |> List.filter (fun todo -> todo.id = id)
+        |> List.tryHead
+
     match msg with
     | TodosReceived todos -> { state with todos = todos }, Cmd.none
     | SetNewTodo text -> { state with newTodo = text }, Cmd.none
-    | AddTodo ->
-        let newTodo =
-            { id = Guid.NewGuid()
-              text = state.newTodo
-              isDone = false }
-
-        { state with
-              todos = RemoteData.map (fun todos -> newTodo :: todos) state.todos
-              newTodo = "" },
-        Cmd.none
+    | AddTodo -> ({ state with addingNewTodo = true }, Api.addTodo state.newTodo TodoAdded)
+    | TodoAdded data ->
+        match data with
+        | Ok _ ->
+            ({ state with
+                   addingNewTodo = false
+                   newTodo = ""
+                   lastError = ""
+                   todos = Loading },
+             Api.getTodos TodosReceived)
+        | Error error ->
+            ({ state with
+                   addingNewTodo = false
+                   lastError = error },
+             Cmd.none)
     | ToggleTodo id ->
-        let updateTodo (todo: Todo) =
-            if todo.id = id then
-                { todo with isDone = not todo.isDone }
-            else
-                todo
-
-        { state with
-              todos = RemoteData.map (List.map updateTodo) state.todos },
-        Cmd.none
+        (state,
+         match findTodo id with
+         | Some todo -> Api.updateTodo { todo with isDone = not todo.isDone } TodoChanged
+         | None -> Cmd.none)
     | DeleteTodo id ->
-        { state with
-              todos = RemoteData.map (List.filter (fun todo -> todo.id <> id)) state.todos },
-        Cmd.none
+        (state,
+         match findTodo id with
+         | Some todo -> Api.deleteTodo todo TodoChanged
+         | None -> Cmd.none)
     | EditTodo id ->
         match state.todos with
         | Success todos ->
@@ -72,16 +76,18 @@ let update (msg: Msg) (state: State) : State * Cmd<Msg> =
         | None -> state, Cmd.none
         | Some editedTodo when editedTodo.text = "" -> state, Cmd.none
         | Some editedTodo ->
-            let updateTodo (todo: Todo) =
-                if todo.id = editedTodo.id then
-                    { todo with text = editedTodo.text }
-                else
-                    todo
-
-            { state with
-                  editedTodo = None
-                  todos = RemoteData.map (List.map updateTodo) state.todos },
-            Cmd.none
+            ({ state with editedTodo = None },
+             match findTodo editedTodo.id with
+             | Some todo -> Api.updateTodo { todo with text = editedTodo.text } TodoChanged
+             | None -> Cmd.none)
+    | TodoChanged result ->
+        match result with
+        | Ok _ ->
+            ({ state with
+                   todos = Loading
+                   lastError = "" },
+             Api.getTodos TodosReceived)
+        | Error error -> ({ state with lastError = error }, Cmd.none)
 
 
 Program.mkProgram init update UI.render
